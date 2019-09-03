@@ -634,21 +634,95 @@ sudo chmod u+x rc.local
 
 ### 温度控制
 
-温度文件位置``
-
-安装硬件温度检测工具sensors
+#### 硬件温度检测工具sensors
 
 ```
-sudo apt-get install lm-sensors
+sudo apt-get install lm-sensors  # 安装硬件温度检测工具sensors
 ```
 
 ```
 sensors  # 显示当前温度
 ```
 
+#### 温度文件
+
+温度文件位置``
+
+查看硬件类型
+
+```
+cat /sys/devices/virtual/thermal/thermal_zone*/type
+cat /sys/devices/virtual/thermal/thermal_zone4/type
+# ao-therm
+```
+
+> "Tboard_tegra" measures the temperature of the Jetson TK1 board (though I'm not sure of the exact location).
+> "Tdiode_tegra" measures the temperature at the edge of the Jetson TK1 board.
+> The zones with "-therm" in their name are for sensors inside the Tegra SOC.
+
+查看硬件温度
+
+```
+cat /sys/devices/virtual/thermal/thermal_zone*/temp
+cat /sys/devices/virtual/thermal/thermal_zone4/temp
+# 35000
+```
+
+以下数字分别对应以上硬件，将数字除以1000得出实际温度（摄氏度）
+
+
+
 
 
 ### 上电启动
+
+
+
+#### 电压电流
+
+The Jetson TX2 module has 3-channel INA3221 monitors at I2C Addresses 0x40 and 0x41. The sysfs nodes to read rail name, voltage, current, and power can be found under the INA3221 driver’s directory:
+`/sys/bus/i2c/drivers/ina3221x `
+
+Among the listed addresses under the mentioned sysfs directory, 0-0040 and 0-0041 are the power monitors for supply rails on Jetson TX2 module:
+The following data can be obtained from the Sysfs:
+Rail Name: ../<address>/iio_device/rail_name_<Channel> 
+Current (mA): ../<address>/iio_device/in_current<Channel>_input 
+Voltage (mV):../<address>/iio_device/in_voltage<Channel>_input 
+Power (mW):../<address>/iio_device/in_power<Channel>_input
+
+The address and channel allocations are given in Table 6-1.
+
+![](Jetson笔记.assets/ddress and-Channel-Allocations.png)
+
+To display the name of the GPU rail: 
+
+```
+cat /sys/bus/i2c/drivers/ina3221x/0-0040/iio_device/rail_name_0 
+# VDD_SYS_GPU
+```
+
+To display the current (in mA) of the GPU rail:
+
+```
+cat /sys/bus/i2c/drivers/ina3221x/0-0040/iio_device/in_current0_input 
+# 180 
+```
+
+To display the voltage (in mV) of the GPU rail:
+
+```
+cat /sys/bus/i2c/drivers/ina3221x/0-0040/iio_device/in_voltage0_input 
+# 730 
+```
+
+To display the power (in mW) of the GPU rail:
+
+```
+cat /sys/bus/i2c/drivers/ina3221x/0-0040/iio_device/in_power0_input 
+# 1159
+```
+
+
 
 
 
@@ -822,6 +896,8 @@ ip rout show
 网络 – edit connection – 535wifi – IPV4 Setting – Method – Manual – 添加网络配置 Adress（静态 ip192.168.1.35）， Netmask（子网掩码 255.255.255.0），Geteway（网关 192.168.1.1），DNS servera（DNS解析 8.8.8.8），Search domains空着
 
 按照上面查询的信息填写，静态ip地址要与当前ip/网关处于同一网段
+
+断开网络重新连接，查看新的ip地址
 
 ##### 方法二 修改配置文件（不推荐）
 
