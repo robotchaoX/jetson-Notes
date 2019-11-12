@@ -339,6 +339,31 @@ Jetson TX1只支持JetPack 3.3，不支持最新版的JetPack，往下找到[Jet
 
 如果通过jetpack不刷机只重装cuda opencv等,则不需要进入usb recovery模式,只需连接网线和usb,运行jetpack根据引导,把==Flash OS Image to Tegra== (刷image到emmc)设为no action,其他操作相同.
 
+
+
+### opencv自定义安装
+
+卸载 OpenCV4Tegra
+
+```
+sudo apt-get purge libopencv4tegra-dev libopencv4tegra
+sudo apt-get purge libopencv4tegra-repo
+sudo apt-get update
+```
+
+### 安装PCL
+
+```
+sudo apt-get install libpcl-dev
+sudo apt-get install libpcl-dev pcl-tools
+```
+
+
+
+
+
+
+
 ## 系统配置
 
 ### 系统拓容
@@ -634,7 +659,7 @@ sudo chmod u+x rc.local
 
 ### 温度控制
 
-#### 硬件温度检测工具sensors
+#### 硬件温度检测工具sensors(不推荐)
 
 ```
 sudo apt-get install lm-sensors  # 安装硬件温度检测工具sensors
@@ -646,19 +671,30 @@ sensors  # 显示当前温度
 
 #### 温度文件
 
-温度文件位置``
+温度文件位置
 
 查看硬件类型
 
 ```
 cat /sys/devices/virtual/thermal/thermal_zone*/type
 cat /sys/devices/virtual/thermal/thermal_zone4/type
-# ao-therm
+# Tboard_tegra
 ```
+
+> 8个温度类型
+> BCPU-therm
+> MCPU-therm
+> GPU-therm
+> PLL-therm
+> Tboard_tegra
+> Tdiode_tegra
+> PMIC-Die    # 第七个温度明显偏高
+> thermal-fan-est
 
 > "Tboard_tegra" measures the temperature of the Jetson TK1 board (though I'm not sure of the exact location).
 > "Tdiode_tegra" measures the temperature at the edge of the Jetson TK1 board.
 > The zones with "-therm" in their name are for sensors inside the Tegra SOC.
+> 第七个温度明显偏高
 
 查看硬件温度
 
@@ -668,9 +704,16 @@ cat /sys/devices/virtual/thermal/thermal_zone4/temp
 # 35000
 ```
 
+> 38000
+> 38000
+> 36500
+> 38000
+> 36000
+> 35000
+> 100000  # 第七个温度明显偏高
+> 37600
+
 以下数字分别对应以上硬件，将数字除以1000得出实际温度（摄氏度）
-
-
 
 
 
@@ -726,7 +769,83 @@ cat /sys/bus/i2c/drivers/ina3221x/0-0040/iio_device/in_power0_input
 
 
 
+### jetson-stats / jtop
+
+[jtop GitHub](https://github.com/rbonghi/jetson_stats)
+[jtop pypi](https://pypi.org/project/jetson-stats/#jtop)
+
+安装pip3
+
+```
+sudo apt-get install python3-pip
+```
+
+安装 jetson-stats
+
+```
+sudo -H pip3 install jetson-stats
+sudo -H pip install -U jetson-stats   # 更新jtop
+```
+
+#### jtop
+
+It is a system monitoring utility that runs on the terminal and see and **control** realtime the status of your [NVIDIA Jetson](http://www.nvidia.com/object/embedded-systems-dev-kits-modules.html). CPU, RAM, GPU status and frequency and other...
+
+```
+sudo jtop
+```
+
+![jtop](Jetson笔记.assets/68747470733a2f2f6769746875622e636f6d2f72626f6e6768692f6a6574736f6e5f73746174732f77696b692f696d616765732f6a746f702e676966.gif)
+
+Controls
+
+To control the your NVIDIA Jetson are available this keyboard commands:
+
+- **a** Start/Stop jetson_clocks service (Note: jetson_clocks start only after 60s from up time)
+- **e** Enable/==Disable== jetson_clocks on board **boot**
+- **+** and **-** Increase and decrease the NVPmodel
+- **p** and **m** Increase and decrease the Fan speed
+
+Pages
+
+**jtop** have four different pages to control your NVIDIA Jetson:
+
+1. **ALL** Are collected all information about your board: CPUs status, Memory, *GPU*, disk, fan and all status about jetson_clocks, NVPmodel and other
+2. **GPU** A real time GPU history about your NVIDIA Jetson
+3. **CTRL** You can control the status of you
+4. **INFO** Are collected all information about libraries, CUDA, Serial Number, interfaces, ...
+
+```
+nvidia@jetson-nano:~/$ sudo jtop -h
+usage: jtop [-h] [-r REFRESH] [--debug] [--page PAGE] [--version]
+jtop is a system monitoring utility and control. Runs on terminal
+optional arguments:
+  -h, --help   show this help message and exit
+  -r REFRESH   refresh interval
+  --debug      Run with debug logger
+  --page PAGE  Open fix page
+  --version    show program's version number and exit
+```
+
+#### [jetson-release](https://github.com/rbonghi/jetson_stats/wiki/jetson_release)
+
+The command show the status and all information about your [NVIDIA Jetson](http://www.nvidia.com/object/embedded-systems-dev-kits-modules.html)
+
+![jtop](Jetson笔记.assets/68747470733a2f2f6769746875622e636f6d2f72626f6e6768692f6a6574736f6e5f73746174732f77696b692f696d616765732f6a6574736f5f72656c656173652e706e67.png)
+
+#### [jetson_variables](https://github.com/rbonghi/jetson_stats/wiki/jetson_variables)
+
+This script generate the easy environment variables to know which is your Hardware version of the Jetson and which Jetpack you have already installed
+
+![jtop](Jetson笔记.assets/68747470733a2f2f6769746875622e636f6d2f72626f6e6768692f6a6574736f6e5f73746174732f77696b692f696d616765732f6a6574736f6e5f656e762e706e67.png)
+
+
+
 ### 查看系统信息
+
+```
+sudo jetson-release
+```
 
 #### 查看Jetson TX2 L4T版本
 
@@ -1011,6 +1130,70 @@ splash 启动的时候使用图形化的进度条代替init的字符输出过程
 
 
 
+### 守护进程
+
+```
+# 列出程序开机占用时间排行
+systemd-analyze blame
+```
+
+```
+# 开机自动启动ssh命令
+sudo systemctl enable ssh
+
+# 关闭ssh开机自动启动命令
+sudo systemctl disable ssh
+
+# 单次开启ssh
+sudo systemctl start ssh
+
+# 单次关闭ssh
+sudo systemctl stop ssh
+```
+
+
+
+### 程序自启动
+
+[systemd](https://wiki.debian.org/systemd)
+[systemd](https://wiki.ubuntu.com/systemd)
+
+[](https://www.cnblogs.com/defifind/p/9285456.html)
+
+[](http://www.r9it.com/20180613/ubuntu-18.04-auto-start.html)
+
+[](https://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-part-two.html)
+
+[](http://www.jinbuguo.com/systemd/systemd.service.html)
+
+ubuntu-server-18.04 设置开机启动脚本
+
+比如以前启动 mysql 服务用:
+
+sudo service mysql start
+现在用：
+
+sudo systemctl start mysqld.service
+
+systemd 默认读取 /etc/systemd/system 下的配置文件，该目录下的文件会链接/lib/systemd/system/下的文件。
+
+执行 ls /lib/systemd/system 你可以看到有很多启动脚本，其中就有我们需要的 rc.local.service
+
+```
+# 查看service配置文件
+systemctl cat sshd.service
+# 查看Systemd默认的启动 Target
+systemctl get-default
+# 查看 multi-user.target 包含的所有服务
+$ systemctl list-dependencies multi-user.target
+
+# 切换到另一个 target
+# shutdown.target 就是关机状态
+$ sudo systemctl isolate shutdown.target
+```
+
+
+
 
 
 ### 登录shell
@@ -1134,7 +1317,7 @@ Linux内核中gpio是最简单，最常用的资源(和 interrupt ,dma,timer一�
 
 
 
-### 应用程序空间GPIO支持
+#### 应用程序空间GPIO支持
 
 Linux GPIO支持导出GPIO控件和状态的功能，以便与使用sysfs的应用程序一起使用。没有其他驱动程序可以这样使用感兴趣的GPIO。像cat和echo这样的简单工具可用于快速读取GPIO输入的当前状态值或设置GPIO输出的电平。
 
@@ -1839,33 +2022,33 @@ candump canX –-filter=0x123:0x7ff  # ？？
 > Usage: ip link set DEVICE type can
 >
 > ​	[ bitrate BITRATE [ sample-point SAMPLE-POINT] ] |
-> 	[ tq TQ prop-seg PROP_SEG phase-seg1 PHASE-SEG1
->  	  phase-seg2 PHASE-SEG2 [ sjw SJW ] ]
+> ​	[ tq TQ prop-seg PROP_SEG phase-seg1 PHASE-SEG1
+>  ​	  phase-seg2 PHASE-SEG2 [ sjw SJW ] ]
 >
 > ​	[ dbitrate BITRATE [ dsample-point SAMPLE-POINT] ] |
-> 	[ dtq TQ dprop-seg PROP_SEG dphase-seg1 PHASE-SEG1
->  	  dphase-seg2 PHASE-SEG2 [ dsjw SJW ] ]
+> ​	[ dtq TQ dprop-seg PROP_SEG dphase-seg1 PHASE-SEG1
+>  ​	  dphase-seg2 PHASE-SEG2 [ dsjw SJW ] ]
 >
 > ​	[ loopback { on | off } ]    # 回环
-> 	[ listen-only { on | off } ]
-> 	[ triple-sampling { on | off } ]
-> 	[ one-shot { on | off } ]
-> 	[ berr-reporting { on | off } ]
-> 	[ fd { on | off } ]
-> 	[ fd-non-iso { on | off } ]
-> 	[ presume-ack { on | off } ]
-> 	[ restart-ms TIME-MS ]
-> 	[ restart ]
-> 	[ termination { 0..65535 } ]
+> ​	[ listen-only { on | off } ]
+> ​	[ triple-sampling { on | off } ]
+> ​	[ one-shot { on | off } ]
+> ​	[ berr-reporting { on | off } ]
+> ​	[ fd { on | off } ]
+> ​	[ fd-non-iso { on | off } ]
+> ​	[ presume-ack { on | off } ]
+> ​	[ restart-ms TIME-MS ]
+> ​	[ restart ]
+> ​	[ termination { 0..65535 } ]
 >
 > ​	Where: BITRATE	:= { 1..1000000 }
-> 		  SAMPLE-POINT	:= { 0.000..0.999 }
-> 		  TQ		:= { NUMBER }
-> 		  PROP-SEG	:= { 1..8 }
-> 		  PHASE-SEG1	:= { 1..8 }
-> 		  PHASE-SEG2	:= { 1..8 }
-> 		  SJW		:= { 1..4 }
-> 		  RESTART-MS	:= { 0 | NUMBER }
+> ​		  SAMPLE-POINT	:= { 0.000..0.999 }
+> ​		  TQ		:= { NUMBER }
+> ​		  PROP-SEG	:= { 1..8 }
+> ​		  PHASE-SEG1	:= { 1..8 }
+> ​		  PHASE-SEG2	:= { 1..8 }
+> ​		  SJW		:= { 1..4 }
+> ​		  RESTART-MS	:= { 0 | NUMBER }
 
 #### 环回模式（自测）
 
@@ -2016,6 +2199,105 @@ sudo ip link set can1 down    # 关闭can1口
 
 
 #### 使用应用程序进行测试
+
+
+
+
+
+### 中断
+
+```
+kill -l    # 查看所有中断
+```
+
+> chao@deepin:~$ kill -l
+>  1) SIGHUP			2) SIGINT	          3) SIGQUIT	            4) SIGILL				    5) SIGTRAP
+>  6) SIGABRT		  7) SIGBUS	         8) SIGFPE	             9) SIGKILL	             10) SIGUSR1
+> 11) SIGSEGV		 12) SIGUSR2	     13) SIGPIPE	          14) SIGALRM	        15) SIGTERM
+> 16) SIGSTKFLT	  17) SIGCHLD 	    18) SIGCONT	        19) SIGSTOP	        20) SIGTSTP
+> 21) SIGTTIN		   22) SIGTTOU     	23) SIGURG	          24) SIGXCPU	        25) SIGXFSZ
+> 26) SIGVTALRM	 27) SIGPROF	      28) SIGWINCH	     29) SIGIO	              30) SIGPWR
+> 31) SIGSYS		    34) SIGRTMIN	     35) SIGRTMIN+1	  36) SIGRTMIN+2  	37) SIGRTMIN+3
+> 38) SIGRTMIN+4	39) SIGRTMIN+5 	40) SIGRTMIN+6	  41) SIGRTMIN+7	  42) SIGRTMIN+8
+> 43) SIGRTMIN+9	44) SIGRTMIN+10	45) SIGRTMIN+11	46) SIGRTMIN+12	47) SIGRTMIN+13
+> 48) SIGRTMIN+14   49) SIGRTMIN+15	50) SIGRTMAX-14   51) SIGRTMAX-13	52) SIGRTMAX-12
+> 53) SIGRTMAX-11   54) SIGRTMAX-10	55) SIGRTMAX-9	 56) SIGRTMAX-8  	57) SIGRTMAX-7
+> 58) SIGRTMAX-6	 59) SIGRTMAX-5  	60) SIGRTMAX-4	 61) SIGRTMAX-3	  62) SIGRTMAX-2
+> 63) SIGRTMAX-1     64) SIGRTMAX	
+
+
+
+ [linux中sleep函数的使用和总结](https://www.cnblogs.com/wuyepeng/p/9789466.html)
+
+在linux编程中，有时候会用到定时功能，常见的是用sleep(time)函数来睡眠time秒；但是这个函数是可以被中断的，也就是说当进程在睡眠的过程中，如果被中断，那么当中断结束回来再执行该进程的时候，该进程会从sleep函数的下一条语句执行；这样的话就不会睡眠time秒了；
+
+> #include<stdio.h>
+> #include <stdlib.h>
+> #include <signal.h>
+> #include <unistd.h>
+> void sig_handler(int num)
+> {
+>     printf("\nrecvive the signal is %d\n", num);
+> }
+> int main()
+> {
+>     int time = 20;
+>     signal(SIGINT, sig_handler);
+>     printf("enter to the sleep.\n");
+>     sleep(time);   // 睡眠过程中被中断，当中断结束回来再执行的时候，从sleep函数的下一条语句执行
+>     printf("sleep is over, main over.\n");
+>     exit(0);
+> }
+
+> enter to the sleep.
+> ^C
+> recvive the signal is 2
+> sleep is over, main over.
+
+从运行结果可以看出，当我按下Ctrl+c发出中断的时候，被该函数捕获，当处理完该信号之后，函数直接执行sleep下面的语句；
+
+下面的例子是真正的睡眠time时间(不被中断影响)：
+
+```
+#include<stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <unistd.h>
+void sig_handler(int num){
+    printf("\nrecvive the signal is %d\n", num);
+}
+int main(){
+    int time = 20;
+  
+    signal(SIGINT, sig_handler);
+    printf("enter to the sleep.\n");
+    //sleep(time);
+    do{
+        time = sleep(time);
+    }while(time > 0);
+  
+    printf("sleep is over, main over.\n");
+  
+    exit(0);
+}
+```
+
+> enter to the sleep.
+> ^C
+> recvive the signal is 2
+> ^C
+> recvive the signal is 2
+> ^C
+> recvive the signal is 2
+> sleep is over, main over.
+
+备注：sleep(time)返回值是睡眠剩下的时间；
+
+备注：可以使用sleep来实现定时发送机制，例如server和client通信，定时发送数据或者定时接受数据（设置避免打扰时间内不接收数据），当然定时接受数据可能会造成数据丢失（超过缓存）
+
+### LINUX信号机制
+
+
 
 ### 图为007载板
 
