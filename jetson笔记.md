@@ -1,5 +1,9 @@
 # Jetson笔记
 
+[TOC]
+
+<!-- toc -->
+
 ## Jetson TX2刷机
 
 ### 首次开机
@@ -105,7 +109,7 @@ STEP01 选择开发环境：
 在 Target Operating System 中选择 JetPack 的版本
 点击CONTINUE进入下一步
 
-![](Jetson笔记.assets/jetson_step1.png)
+![](assets/jetson_step1.png)
 
 STEP02 选择安装的组件：
 选择安装的组件，勾选Jetson OS则会重新刷系统，不勾选则不会；勾选Jetson SDK component 则会给jetson安装CUDA Opencv等
@@ -115,12 +119,12 @@ STEP02 选择安装的组件：
 
 Tips：若界面显示不完整，无法勾选接受条款进行下一步，原因是笔记本的屏幕太小了，外接21寸以上**拓展屏**即可。
 
-![](Jetson笔记.assets/jetson_step2.png)
+![](assets/jetson_step2.png)
 
 STEP03 开始下载安装相关包：
 下载的时间比较久
 
-![](Jetson笔记.assets/jetson_step3.png)
+![](assets/jetson_step3.png)
 
 如果下载中途中断了再次打开后error报错无法继续下载，直接**覆盖安装一遍sdkmanager**即可。
 
@@ -136,11 +140,11 @@ STEP03 开始下载安装相关包：
 第二次刷机的话自动模式就可以使用了（可能仍然不能使用），启动jetson运行，通过USB连接host主机和jetson，输入当前能够登录jetson的用户名和密码。
 注意：若使用 VM VirtualBox 虚拟机，需设置为USB 3.0 (xHCI) Controller，jetson与host主机连接的物理接口也使用电脑的USB3.0口，在host主机上新打开一个终端，使用 lsusb 命令查看是否有“NVIDIA Corp”的设备，有说明连接成功，成功进入Recovery模式，如果是使用 VM VirtualBox 的话需设置虚拟机，在虚拟机菜单栏—-device—-USB—-勾选带NVIDIA的USB设备，然后在菜单栏—-device—-USB—-USB setting—-添加“NVIDIA Corp”或“NVIDIA Linux for Tegra”的USB设备以便刷机时重启后仍能够自动连接NVIDIA jetson的USB设备
 
-![](Jetson笔记.assets/automatic_setup.png)
+![](assets/automatic_setup.png)
 
 #### 手动进入Recovery模式
 
-![](Jetson笔记.assets/manual_setup.png)
+![](assets/manual_setup.png)
 
 > 手动进入Recovery模式具体步骤如为： 
 > 1.断开电源，拔掉JetSon TX2电源线 （断电2分钟）
@@ -168,13 +172,13 @@ Jetson安装新的系统镜像后，USB的名称变成了“NVIDIA Linux for Teg
 
 Tips：若装Jetson SDK components 时，在TX的登录界面输入用户名和登录密码点`install`安装后，报错无法连接USB设备，则重启TX，**在重启的过程中一直点`install`**，在快要到登录界面时能够连接到USB设备，继续开始安装Jetson SDK components。注意保持网络连接，安装过程中会update更新，保持屏幕常亮，防止休眠。
 
-![](Jetson笔记.assets/jetson_sdk_components.png)
+![](assets/jetson_sdk_components.png)
 
 如果选删除下载文件，下次刷机还要重新下载。如果不删除，下次刷机就会省点时间。
 
 JetPack 自带例程的位置
 
-![](Jetson笔记.assets/jetson_samples.png)
+![](assets/jetson_samples.png)
 
 
 
@@ -376,7 +380,7 @@ sudo apt-get install libpcl-dev pcl-tools
 
 1. 格式化SSD固态硬盘
 
-![](Jetson笔记.assets/ssd_format.png)
+![](assets/ssd_format.png)
 
 2. 挂载SSD固态硬盘
 
@@ -430,11 +434,11 @@ https://www.ncnynl.com/archives/201705/1662.html
 
 格式化为ext4格式
 
-![1556335703033](Jetson笔记.assets/1556335703033.png)
+![1556335703033](assets/1556335703033.png)
 
-![1556335927923](Jetson笔记.assets/1556335927923.png)
+![1556335927923](assets/1556335927923.png)
 
-![](Jetson笔记.assets/jetsonTX2_sd_blk.png)
+![](assets/jetsonTX2_sd_blk.png)
 
 记下SD卡`Device` `/dev/mmcblk1p1`所在位置，后面要用
 
@@ -494,6 +498,14 @@ https://www.jetsonhacks.com/2017/01/27/run-jetson-tx1-from-usb-drive/
 
 #### qt安装
 
+依赖，不然报错 无法链接 Qt5::Widgets 
+
+```
+sudo apt install libvtk6-dev libvtk6-qt-dev  
+```
+
+
+
 ```
 sudo apt-get install qt5-default qtcreator -y  # 安装QT Creator
 # 文档和例子(可选)
@@ -504,19 +516,19 @@ sudo apt-get install qt5-default qtcreator -y  # 安装QT Creator
 
 打开qt creator,依次选择Tools->Options->Build & Run->Compilers
 
-![](Jetson笔记.assets/20190310201852557.png)
+![](assets/20190310201852557.png)
 
 点击`Add`按钮选择`GCC`。 在`Compiler path:’`中选择加入路径`/usr/bin/gcc`。并依次设置`ABI`的选项如下图所示:（`custom – arm – linux – generic – elf – 64 bit`）：
 
-![å¨è¿éæå¥å¾çæè¿°](Jetson笔记.assets/20190310202042875.png)
+![å¨è¿éæå¥å¾çæè¿°](assets/20190310202042875.png)
 
 然后点击`Apply`按钮保存，然后点击`Kits`: 
 
-![å¨è¿éæå¥å¾çæè¿°](Jetson笔记.assets/20190310202719628.png)
+![å¨è¿éæå¥å¾çæè¿°](assets/20190310202719628.png)
 
 继续点击`Add`按钮，按下图填写Name，Qt version, CMake Tool等信息，填好如下图所示：
 
-![å¨è¿éæå¥å¾çæè¿°](Jetson笔记.assets/20190310202855993.png)
+![å¨è¿éæå¥å¾çæè¿°](assets/20190310202855993.png)
 
 点击`Apply`,然后点击`OK`，设置完毕。
 
@@ -553,7 +565,7 @@ sudo apt-get install chromium-browser
 
 Jetson TX2 有5工作模式及相应的CPU和GPU频率：
 
-![img](Jetson笔记.assets/9830587-1149041c8eabcc42.png)
+![img](assets/9830587-1149041c8eabcc42.png)
 
 | Mode  | Mode Name      | Denver 2 | Frequency | ARM A57 | Frequency | GPU Frequency |
 | ----- | -------------- | -------- | --------- | ------- | --------- | ------------- |
@@ -628,7 +640,7 @@ sudo sh -c 'echo 255 > /sys/devices/pwm-fan/target_pwm'
 
 值（0~255）来修改风扇的风速
 
-> #sudo echo 200 > /sys/devices/pwm-fan/target-pwm
+> //#sudo echo 200 > /sys/devices/pwm-fan/target-pwm
 > bash: /sys/devices/pwm-fan/target_pwm: Permission denied
 >
 > 可以看到 bash 拒绝这么做，说是权限不够。这是因为重定向符号 “>”  也是 bash 的命令。我们使用 sudo 只是让 echo 命令具有了 root 权限，但是没有让 “>” 命令也具有 root 权限，所以 bash 会认为这两个命令都没有的权限。解决这一问题需要利用 "sh -c" 命令，它可以让 bash 将一个字串作为完整的命令来执行，这样就可以将 sudo 的影响范围扩展到整条命令。具体用法如下：`sudo sh -c 'echo 255 > /sys/devices/pwm-fan/target_pwm`
@@ -643,7 +655,7 @@ sudo vi /etc/rc.local
 
 将以下内容添加到文档中
 
-> #!/bin/bash
+> `#!/bin/bash`
 > sleep 10
 > sudo sh -c 'echo 80 > /sys/devices/pwm-fan/target_pwm'
 
@@ -735,7 +747,7 @@ Power (mW):../<address>/iio_device/in_power<Channel>_input
 
 The address and channel allocations are given in Table 6-1.
 
-![](Jetson笔记.assets/ddress and-Channel-Allocations.png)
+![](assets/ddress and-Channel-Allocations.png)
 
 To display the name of the GPU rail: 
 
@@ -767,8 +779,6 @@ cat /sys/bus/i2c/drivers/ina3221x/0-0040/iio_device/in_power0_input
 
 
 
-
-
 ### jetson-stats / jtop
 
 [jtop GitHub](https://github.com/rbonghi/jetson_stats)
@@ -795,7 +805,7 @@ It is a system monitoring utility that runs on the terminal and see and **contro
 sudo jtop
 ```
 
-![jtop](Jetson笔记.assets/68747470733a2f2f6769746875622e636f6d2f72626f6e6768692f6a6574736f6e5f73746174732f77696b692f696d616765732f6a746f702e676966.gif)
+![jtop](assets/68747470733a2f2f6769746875622e636f6d2f72626f6e6768692f6a6574736f6e5f73746174732f77696b692f696d616765732f6a746f702e676966.gif)
 
 Controls
 
@@ -831,13 +841,13 @@ optional arguments:
 
 The command show the status and all information about your [NVIDIA Jetson](http://www.nvidia.com/object/embedded-systems-dev-kits-modules.html)
 
-![jtop](Jetson笔记.assets/68747470733a2f2f6769746875622e636f6d2f72626f6e6768692f6a6574736f6e5f73746174732f77696b692f696d616765732f6a6574736f5f72656c656173652e706e67.png)
+![jtop](assets/68747470733a2f2f6769746875622e636f6d2f72626f6e6768692f6a6574736f6e5f73746174732f77696b692f696d616765732f6a6574736f5f72656c656173652e706e67.png)
 
 #### [jetson_variables](https://github.com/rbonghi/jetson_stats/wiki/jetson_variables)
 
 This script generate the easy environment variables to know which is your Hardware version of the Jetson and which Jetpack you have already installed
 
-![jtop](Jetson笔记.assets/68747470733a2f2f6769746875622e636f6d2f72626f6e6768692f6a6574736f6e5f73746174732f77696b692f696d616765732f6a6574736f6e5f656e762e706e67.png)
+![jtop](assets/68747470733a2f2f6769746875622e636f6d2f72626f6e6768692f6a6574736f6e5f73746174732f77696b692f696d616765732f6a6574736f6e5f656e762e706e67.png)
 
 
 
@@ -853,7 +863,7 @@ sudo jetson-release
 head -n 1 /etc/nv_tegra_release
 ```
 
-> #R32 (release), REVISION: 1.0, GCID: 14531094, BOARD: t186ref, EABI: aarch64, DATE: Wed Mar 13 07:41:08 UTC 2019
+> ``#R32 (release), REVISION: 1.0, GCID: 14531094, BOARD: t186ref, EABI: aarch64, DATE: Wed Mar 13 07:41:08 UTC 2019
 
 ### 修改显示器分辨率
 
@@ -1102,15 +1112,15 @@ sudo reboot
 > GRUB_CMDLINE_LINUX="“
 > ```
 >
-> #桌面的默认设置(即仅限启动画面)：
+> //#桌面的默认设置(即仅限启动画面)：
 > GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"  # Hide text and show splash
 > GRUB_CMDLINE_LINUX="“
 >
-> #什么都不显示直接从黑屏到进入登录界面
+> //#什么都不显示直接从黑屏到进入登录界面
 > GRUB_CMDLINE_LINUX_DEFAULT=“quiet”  # Don't show Ubuntu bootup text
 > GRUB_CMDLINE_LINUX="console=tty12" # Don't show kernel text # Redirect the kernel output to another tty
 >
-> #显示详细的开机信息文字
+> //#显示详细的开机信息文字
 > GRUB_CMDLINE_LINUX_DEFAULT=""    # Show text but not the splash
 > GRUB_CMDLINE_LINUX="“
 
@@ -1132,6 +1142,17 @@ splash 启动的时候使用图形化的进度条代替init的字符输出过程
 
 ### 守护进程
 
+开机自启动服务管理
+
+```
+sudo apt-get install sysv-rc-conf
+sudo sysv-rc-conf
+```
+
+打X的即表示开机启动项，可以把光标移到打叉的地方，输入空格来反选。
+
+
+
 ```
 # 列出程序开机占用时间排行
 systemd-analyze blame
@@ -1150,6 +1171,10 @@ sudo systemctl start ssh
 # 单次关闭ssh
 sudo systemctl stop ssh
 ```
+
+
+
+
 
 
 
@@ -1193,6 +1218,75 @@ $ sudo systemctl isolate shutdown.target
 ```
 
 
+
+修改开机默认等待时间
+
+```
+ sudo gedit /boot/grub/grub.cfg
+```
+
+默认等待时间是10秒
+
+> set timeout=3     #默认3秒
+
+
+
+显示开机启动项的时间
+
+```
+systemd-analyze    # 显示总时间
+systemd-analyze blame    # 显示详细
+```
+
+> chao@deepin:~$ systemd-analyze blame
+>          21.755s apt-daily-upgrade.service
+>           8.214s NetworkManager-wait-online.service
+>           6.929s systemd-networkd-wait-online.service
+>           3.194s plymouth-quit-wait.service
+
+
+
+### 开机启动项
+
+禁用慢的开机启动项
+
+```
+sudo systemctl disable NetworkManager-wait-online.service
+```
+
+ mask 这个 systemctl 命令的选项参数是比 disable 更强力，彻底禁用。
+
+```
+sudo systemctl mask plymouth-quit-wait.service
+```
+
+
+
+
+
+### 挂载磁盘
+
+```
+sudo vim /etc/fstab
+```
+
+> ```
+> #/dev/sda1
+> 
+> UUID=686ad259-fad4-4e68-9237-e375e0d0ea32 / ext4 rw,relatime,data=ordered 0 1
+> 
+> #/dev/sda4
+> 
+> UUID=21017bab-45da-48c8-8376-62fa5746e0dc /home ext4 rw,relatime,data=ordered 0 2
+> 
+> #/dev/sdb1 LABEL=EFI040system040partition
+> 
+> UUID=1892-5B3E /boot/efi vfat rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro 0 2
+> 
+> #/dev/sda2
+> 
+> UUID=f2df352f-4e45-459d-8238-da663753209f none swap defaults,pri=-2 0 0
+> ```
 
 
 
@@ -1243,6 +1337,12 @@ Ubuntu 16.04使用root 帐号开启 SSH 登录
 
 ### CLion远程同步及调试
 
+#### 远程端依赖rsync
+
+```
+sudo apt-get install rsync    # jetson安装同步工具
+```
+
 仅需设置本地CLion即可实现远程编辑和调试，设置**Deployment**通过SSH登录远程jetson即可实现代码同步编程，通过设置**远程toolchain工具链**可直接使用jetson的工具链进行编译调试。
 
 #### 设置本地CLion
@@ -1251,9 +1351,9 @@ Ubuntu 16.04使用root 帐号开启 SSH 登录
 
  File | Settings | Build, Execution, Deployment | Deployment | +号 SFPT 填写远程登录jensonTX2的帐号密码，点对号set as default 设为默认
 
-![](Jetson笔记.assets/jetson_deployment_1.png)
+![](assets/jetson_deployment_1.png)
 
-![](Jetson笔记.assets/jetson_deployment_options.png)
+![](assets/jetson_deployment_options.png)
 
 ##### 删除编译文件夹cmake-build-debug
 
@@ -1263,15 +1363,15 @@ Ubuntu 16.04使用root 帐号开启 SSH 登录
 
 设置远程的jetsonTX2自己的编译工具链
 
-![](Jetson笔记.assets/jetson_remote_toolchains.png)
+![](assets/jetson_remote_toolchains.png)
 
-![](Jetson笔记.assets/jetson_remote__toolchains2.png)
+![](assets/jetson_remote__toolchains2.png)
 
 添加远程工具链后 Deployment 中会自动新增一个临时连接，保留不做任何修改即可。
 
-![](Jetson笔记.assets/jetson_remote_toolchains3.png)
+![](assets/jetson_remote_toolchains3.png)
 
-![](Jetson笔记.assets/jetson_remote_toolchains4.png)
+![](assets/jetson_remote_toolchains4.png)
 
 ##### 编译
 
@@ -1293,7 +1393,7 @@ Please either delete it manually or select another generation directory`
 
 解决：删除添加远程工具链后 Deployment 中会自动新增一个临时连接，**删除编译文件夹cmake-build-debug**，**重启Clion**，**不需要删除编译文件夹cmake-build-debug**，重新设置 Toolchains 为远程 Remote Host，ok会自动编译
 
-![](Jetson笔记.assets/tool_deployment.png)
+![](assets/tool_deployment.png)
 
 ##### 调用窗口工具栏
 
@@ -1651,7 +1751,7 @@ USB转串口的适配器，按芯片来分，有以下几种：CP2104, PL2303, C
 
 然后将USB连接器插入主机。
 
-![è¿æ¥å°Jetson TX2å¼åå¥ä"¶çä¸²è¡æ§å¶å°çµç¼](Jetson笔记.assets/Serial-Cable-FI.jpg)
+![è¿æ¥å°Jetson TX2å¼åå¥ä"¶çä¸²è¡æ§å¶å°çµç¼](assets/Serial-Cable-FI.jpg)
 
 #### 连接参数
 
@@ -1773,7 +1873,7 @@ ls -l  /dev/ttyTHS*  # 查看设备上已经启用的串口
 >
 > ttyTHS3  —-               蓝牙模块                 —-  蓝牙（无外接口）
 
-### Linux下如何使用USB转串口设备
+### Linux下使用USB转串口设备
 
 默认情况下ubuntu已经安装了USB转串口驱动(pl2303或者cp210x的)
 
@@ -1858,7 +1958,7 @@ i2cget -y 1 0x50 0x00
 
 
 
-### jetsonTX2 CAN通信
+### CAN通信
 
 [Jetson TX2——CAN口的使用](https://blog.csdn.net/xuezhunzhen9743/article/details/81877757)
 
@@ -1897,8 +1997,6 @@ TX2的J26模块下的CAN0的CAN0_RX，CAN0_TX分别接CAN收发器的RX，TX
 ![è¿éåå¾çæè¿°](../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/Jetson/Jetson%E6%95%99%E7%A8%8B.assets/20180823172406536.jpg)
 
 ![J26与canbus收发器物理连接图](../../%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/Jetson/Jetson%E6%95%99%E7%A8%8B.assets/20180823174429990.png)
-
-
 
 不需要重新编译内核
 
@@ -1997,27 +2095,19 @@ candump canX –-filter=0x123:0x7ff  # ？？
 
 1. 配置canbus属性
 
+> ```
 > #常用ip配置命令
->
 > ip link set can0 type can help  # 获取帮助信息
->
 > ip link set can0 type can bitrate 500000  #设置can0波特率500k
->
 > sudo ip link set can0 up    # 挂载can0
->
 > #ifconfig can0 up    # 挂载can0
->
 > #ip link set canX type can restart-ms 100  #  启用自动总线关闭恢复？？
->
 > ip link set canX type can restart  #  直接重启can
->
 > ip -details link show can0  # 查看can总线状态 
->
 > ip -details -statistics link show can0  # 查看can口工作状态
->
 > ip link set can0 down    # 关闭can0口
->
 > #ifconfig can0 down    # 关闭can0
+> ```
 
 > Usage: ip link set DEVICE type can
 >
@@ -2202,8 +2292,6 @@ sudo ip link set can1 down    # 关闭can1口
 
 
 
-
-
 ### 中断
 
 ```
@@ -2231,16 +2319,15 @@ kill -l    # 查看所有中断
 
 在linux编程中，有时候会用到定时功能，常见的是用sleep(time)函数来睡眠time秒；但是这个函数是可以被中断的，也就是说当进程在睡眠的过程中，如果被中断，那么当中断结束回来再执行该进程的时候，该进程会从sleep函数的下一条语句执行；这样的话就不会睡眠time秒了；
 
+> ```
 > #include<stdio.h>
 > #include <stdlib.h>
 > #include <signal.h>
 > #include <unistd.h>
-> void sig_handler(int num)
-> {
+> void sig_handler(int num){
 >     printf("\nrecvive the signal is %d\n", num);
 > }
-> int main()
-> {
+> int main(){
 >     int time = 20;
 >     signal(SIGINT, sig_handler);
 >     printf("enter to the sleep.\n");
@@ -2248,6 +2335,7 @@ kill -l    # 查看所有中断
 >     printf("sleep is over, main over.\n");
 >     exit(0);
 > }
+> ```
 
 > enter to the sleep.
 > ^C
@@ -2258,29 +2346,26 @@ kill -l    # 查看所有中断
 
 下面的例子是真正的睡眠time时间(不被中断影响)：
 
-```
-#include<stdio.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <unistd.h>
-void sig_handler(int num){
-    printf("\nrecvive the signal is %d\n", num);
-}
-int main(){
-    int time = 20;
-  
-    signal(SIGINT, sig_handler);
-    printf("enter to the sleep.\n");
-    //sleep(time);
-    do{
-        time = sleep(time);
-    }while(time > 0);
-  
-    printf("sleep is over, main over.\n");
-  
-    exit(0);
-}
-```
+> ```
+> #include<stdio.h>
+> #include <stdlib.h>
+> #include <signal.h>
+> #include <unistd.h>
+> void sig_handler(int num){
+>     printf("\nrecvive the signal is %d\n", num);
+> }
+> int main(){
+>     int time = 20;
+>     signal(SIGINT, sig_handler);
+>     printf("enter to the sleep.\n");
+>     //sleep(time);
+>     do{
+>         time = sleep(time);
+>     }while(time > 0);
+>     printf("sleep is over, main over.\n");
+>     exit(0);
+> }
+> ```
 
 > enter to the sleep.
 > ^C
@@ -2322,7 +2407,7 @@ int main(){
 
 #### 外设接口
 
-![](Jetson笔记.assets/007载板外设IO.png)
+![](assets/007载板外设IO.png)
 
 
 
@@ -2352,7 +2437,7 @@ S1 电源按钮，当载板处于 ATX 模式时，按下按钮系统启动，当
 
 ## RealSense 相机
 
-### Intel® RealSense™ D435 参数
+### RealSense D435 参数
 
 | Features         | **Use Environment:** Indoor/Outdoor<br />**Image Sensor Technology:** Global Shutter, 3μm x 3μm pixel size | **Maximum Range:** Approx. 10 meters. Accuracy varies depending on calibration, scene, and lighting condition. |
 | ---------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -2437,9 +2522,9 @@ Verify that the kernel is updated :
 
 #### [Ubuntu 源码安装](https://github.com/IntelRealSense/librealsense/blob/master/doc/installation.md)
 
-##### 断开相机连接
+**断开相机连接**
 
-##### 安装依赖
+**安装依赖**
 
 ```
 sudo apt-get update && sudo apt-get upgrade && sudo apt-get dist-upgrade
@@ -2460,18 +2545,18 @@ Ubuntu 18:
 sudo apt-get install libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev 
 ```
 
-##### 下载源码
+**下载源码**
 
 Download and unzip the latest stable version from master branch:
 
-##### Run Intel Realsense permissions script located from librealsense root directory:
+**Run Intel Realsense permissions script located from librealsense root directory:**
 
 ```
 cd librealsense-master
 ./scripts/setup_udev_rules.sh
 ```
 
-##### Build and apply patched kernel modules for:
+**Build and apply patched kernel modules for:**
 
 **Ubuntu 14/16/18 with LTS kernel** script will download, patch and build realsense-affected kernel modules (drivers).
 Then it will attempt to insert the patched module instead of the active one. If failed the original uvc modules will be restored.
@@ -2480,14 +2565,14 @@ Then it will attempt to insert the patched module instead of the active one. If 
 ./scripts/patch-realsense-ubuntu-lts.sh
 ```
 
-##### Building librealsense2 SDK
+**Building librealsense2 SDK**
 
 ```
 mkdir build && cd build
 cmake ../ -DBUILD_EXAMPLES=true  # Builds librealsense 同时编译 demos and tutorials
 ```
 
-##### Recompile and install *librealsense* binaries:
+**Recompile and install *librealsense* binaries:**
 
 ```
 sudo make uninstall && make clean && make && sudo make install
@@ -2583,6 +2668,8 @@ intel-realsense-dfu -p
 [Ubuntu 16.04 安装RealSense D435教程](https://blog.csdn.net/weixin_44024460/article/details/89320469)
 
 
+
+## ZED 相机
 
 
 
